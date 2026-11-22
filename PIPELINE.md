@@ -47,7 +47,14 @@ python3 /home/claude/onset.py tokens.json 단어1 단어2@시작초 ...   # 각 
 ## 6. 화면 (Three.js 툰 + 2D 모션그래픽)
 - 예시: `toolkit/three3d/ff/faa_body.js` + `faa_over.js`(공항·땅속 케이블·레트로 PC 3D + 출발 안내판·레이더·달력·중고거래·돈 2D), `nvda_*`(무대·층 쌓기 3D + 주가 차트·신문 콜라주·인용 카드 2D), `glasses_*`(교실 종이인형 + 투명 분해).
 - 새 `<slug>_body.js`(3D 세트, MODE(t), state, KEYS 카메라, render3)와 `<slug>_over.js`(2D 화면들, overlays, chrome 제목·태그·출처, flashes, capOn, draw)를 작성.
-- 그림체 기본: 툰 3D 마을(MeshToonMaterial+OutlineEffect, 하늘 #bcd4e6, 보랏빛 그림자, 조약돌 바닥) + 2D 종이인형 캐릭터 카드(카메라를 보는 평면, 외곽선 제외). 과거 장면은 세피아 틴트, 비극 장면은 어두운 보라 틴트. 시간대가 바뀌면 ◀◀/▶▶ 되감기 전환. 상단 pill에 '1919년 1월 15일, 보스턴' 같은 시간·장소 태그. 자세한 규칙은 스킬 ainex-twist-history-toon, 원본 예시는 프로젝트 문서 claude/code-video/twist/molasses.html.
+- 그림체는 장면에 맞게 여러 스킬을 골라 섞는다(사용자 지시). 시작 전에 쓸 스킬을 Skill 도구로 불러 읽는다.
+  - ainex-twist-history-toon: 툰 3D 마을 + 2D 종이인형 캐릭터, 세피아 회상, ◀◀/▶▶ 되감기 (역사 장면의 기본 뼈대)
+  - ainex-motion-graphics-10: 종이 콜라주·픽셀 레트로·키네틱 타이포·데이터 도시·네온 회로·투명 장치 분해·스케일 줌아웃·물리 연쇄 컷
+  - ainex-final-form-3d: 기계·구조물 부품이 붙는 3D, 지시선·흐름·문제/해결 인포그래픽
+  - ainex-lowpoly-3d-video: 이목구비 있는 로우폴리 사람, 근접 카메라·배경 흐림
+  - ainex-flat-illustration-video: 베이지 평면 인포그래픽(지도·도표·아이콘)
+  - ainex-code-motion-video, ainex-style-spec: 공통 렌더 방식과 자막·제목·출처 규격
+- 한 영상에 3~4가지 스타일을 섞되, 이 저장소의 페이지 구조(head.js + <slug>_body.js + over.js 앞부분 + <slug>_over.js, render3d.py)로 통합해 한 페이지에서 렌더한다.
 - 장면마다 스타일을 바꾼다: 키네틱 타이포 / 데이터 화면 / 3D 툰 세트 / 투명 분해 / 네온 회로 / 종이 콜라주. "그런데 말이죠"는 파란 화면 타이포.
 - 자막 띠(y≈1250) 근처 1150~1300에는 다른 글자를 두지 않는다. 출처 줄은 y=1700.
 ```bash
