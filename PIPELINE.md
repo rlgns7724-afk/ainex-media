@@ -63,13 +63,13 @@ rm -f probe/*.png; PAGE=<slug>.html python3 render3d.py probe 1 4 8 ... (20장 �
 python3 /home/claude/clock/sheet.py $W/chk/s1.png 1 4 8 ...   # Read로 확인 → 겹침·구도 수정 반복
 ```
 
-## 7. 렌더 (3분할 병렬, 백그라운드)
-- 총 프레임 = round(TOTAL*30). out/run.sh에서 3구간을 `&`로 돌리고 `wait` 후 DONE 파일. 렌더 중에는 probe를 돌리지 않는다.
+## 7. 렌더 (조각 단위, 이어 하기 가능)
+- 작업 공간이 중간에 재시작될 수 있으므로 긴 백그라운드 렌더를 쓰지 않는다. 120프레임 조각으로 나눠 이미 있는 조각은 건너뛰고, `nproc`개(보통 2개) 작업자를 `timeout 540`으로 포그라운드 실행하고 조각이 다 찰 때까지 반복한다(`toolkit/tools/segrun.sh <slug> <총프레임> <폴더> <번호> <작업자수>`: 결과 파일을 .tmp로 쓰고 끝나면 mv). 다 모이면 concat. 렌더 중에는 probe를 돌리지 않는다.
 
 ## 8. 효과음·믹스
 - `toolkit/tools/audio_base.py`를 복사한 뒤 put(...) 줄들을 추가(example_audio.py 참고). 장면 전환 whoosh, 숫자 thump, 팝업 pop, 반전 boom.
 ```bash
-ffmpeg -y -i narr.mp3 -i out/sfx.wav -filter_complex "[0:a]aresample=48000,aformat=channel_layouts=mono,apad[n];[n][1:a]amix=inputs=2:normalize=0:duration=longest,loudnorm=I=-17:TP=-1.5:LRA=11" -t <TOTAL> -ar 48000 out/mix.wav
+ffmpeg -y -i narr.mp3 -i out/sfx.wav -filter_complex "[0:a]aresample=48000,aformat=channel_layouts=mono,apad[n];[n][1:a]amix=inputs=2:normalize=0:duration=longest,loudnorm=I=-14:TP=-1.5:LRA=11" -t <TOTAL> -ar 48000 out/mix.wav
 ```
 
 ## 9. 합치기·검수·경량화
