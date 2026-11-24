@@ -7,3 +7,4 @@
 - 2026-11-24 export-1-trillion | 수출 1조 달러, 실어 보낸 짐은 오히려 줄었다 | 출처: 관세청·산업통상부 발표(연합뉴스, 한국일보, 헤럴드경제, 파이낸셜뉴스, 이투데이)
 - 2026-11-25 spiderman-wall-v2 | [과학 what-if] 스파이더맨은 왜 벽을 못 탈까 | 출처: 케임브리지대 Labonte 외, PNAS(2016)
 - 2026-11-26 hyatt-walkway | 백 명 넘게 숨진 호텔 통로 붕괴, 범인은 '편리함'이었다 | 출처: 미국 NBS(NIST) 조사 보고서(NBSIR 82-2465), 브리태니커, 린다 홀 도서관, STRUCTURE지, KCTV5
+- 2026-11-27 penny-drop | [과학 what-if] 빌딩에서 떨어진 동전, 사람을 죽일 수 있을까 | 출처: 버지니아대 Bloomfield(사이언티픽 아메리칸·라이브사이언스·UVA Today), NASA GPM, 위스콘신대 SSEC
