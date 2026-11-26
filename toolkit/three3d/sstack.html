@@ -1,0 +1,33 @@
+<!doctype html><html><head><meta charset="utf-8"><style>@font-face{font-family:Jua;src:url(fonts/Jua-Regular.ttf)}body{margin:0;background:#000}</style></head><body><canvas id="out" width="1080" height="1920"></canvas>
+<script>
+const W=1080,H=1920,c=document.getElementById('out'),x=c.getContext('2d');x.imageSmoothingEnabled=false;
+// 픽셀 자동차를 높이별 단면(레이어) 16장으로 정의: 위에서 본 24x12 격자
+const L=14,GW=24,GH=12,layers=[];
+function car(z,i,j){ // z:0=바닥 → 13=지붕
+  const cx=(i-11.5)/12, cy=(j-5.5)/6; const body=Math.abs(cx)<.98&&Math.abs(cy)<.95;
+  if(!body) return null;
+  if(z<2){ // 바퀴
+    const wheel=(Math.abs(Math.abs(cx)-.62)<.16)&&Math.abs(cy)>.62; return wheel?'#1b1b22':null; }
+  if(z<7) { if(Math.abs(cy)>.9||Math.abs(cx)>.94) return '#1d3f9a'; return (Math.abs(cy)<.18)?'#f4f4f4':'#2f63d6'; }
+  if(z<8) { // 허리선
+    return (Math.abs(cy)<.18)?'#f4f4f4':'#24499e'; }
+  // 캐빈(앞뒤로 좁음)
+  if(Math.abs(cx+.05)<.45-(z-8)*.03 && Math.abs(cy)<.8-(z-8)*.04){ if(z>=12) return (Math.abs(cy)<.18)?'#f4f4f4':'#2f63d6';
+    return (Math.abs(cy)<.7-(z-8)*.04 && Math.abs(cx+.05)<.4-(z-8)*.03)?'#9fd8ff':'#2f63d6'; }
+  return null;}
+for(let z=0;z<L;z++){const cv=document.createElement('canvas');cv.width=GW;cv.height=GH;const g=cv.getContext('2d');for(let i=0;i<GW;i++)for(let j=0;j<GH;j++){const col=car(z,i,j);if(col){g.fillStyle=col;g.fillRect(i,j,1,1);}}layers.push(cv);}
+// 바닥 트랙
+const tr=document.createElement('canvas');tr.width=90;tr.height=160;{const g=tr.getContext('2d');for(let i=0;i<90;i++)for(let j=0;j<160;j++){g.fillStyle=((i*7+j*13)%5)?'#3fa34d':'#4bb359';g.fillRect(i,j,1,1);}g.fillStyle='#3a3c44';g.beginPath();g.arc(45,80,38,0,7);g.arc(45,80,22,0,7,true);g.fill();for(let a=0;a<64;a++){g.fillStyle=a%2?'#e8463a':'#fff';const r=39,q=a/64*6.283;g.fillRect(45+Math.cos(q)*r-1,80+Math.sin(q)*r-1,2,2);}}
+const S=12; // 화면 픽셀 배율
+function drawStack(cx,cy,rot,scale,spread){x.save();x.translate(cx,cy);for(let z=0;z<L;z++){x.save();x.translate(0,-z*spread*scale);x.rotate(rot);x.drawImage(layers[z],-GW/2*scale,-GH/2*scale,GW*scale,GH*scale);x.restore();}x.restore();}
+function txt(s,X,Y,sz,col){x.font=sz+'px Jua';x.textAlign='center';x.lineWidth=sz*.14;x.strokeStyle='#000';x.lineJoin='round';x.strokeText(s,X,Y);x.fillStyle=col;x.fillText(s,X,Y);}
+function draw(t){x.imageSmoothingEnabled=false;x.fillStyle='#14182a';x.fillRect(0,0,W,H);
+  if(t<3){ // 1) 레이어 펼쳐 보이기
+    const sp=1+3*Math.min(1,t/1.5);for(let z=0;z<L;z++){x.save();x.translate(540,1250-z*sp*S*.9);x.rotate(.5);x.globalAlpha=.95;x.drawImage(layers[z],-GW/2*S,-GH/2*S,GW*S,GH*S);x.strokeStyle='rgba(255,255,255,.25)';x.strokeRect(-GW/2*S,-GH/2*S,GW*S,GH*S);x.restore();}
+    txt('2D 단면 14장',540,420,90,'#fff');txt('층층이 쌓기',540,540,90,'#ffd23a');}
+  else { // 2) 쌓아서 회전 + 트랙 주행
+    x.drawImage(tr,0,0,90,160,0,0,W,H*0+1920);const q=(t-3)*.9,R=38*12,cx=540+Math.cos(q)*R*.8,cy=960+Math.sin(q)*R*.8;
+    drawStack(cx,cy,q+Math.PI/2,S,1);txt('돌리면 3D처럼',540,300,96,'#fff');txt('스프라이트 스태킹',540,420,80,'#ffd23a');}
+}
+window.seek=async t=>draw(t);window.TOTAL=8;draw(0);window.ready=true;
+</script></body></html>
