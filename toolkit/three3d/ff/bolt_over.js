@@ -67,10 +67,21 @@ function chrome(t) { const g = ctx.createLinearGradient(0, 0, 0, 520); g.addColo
   if (t > C.n10) txt('출처: 미국 기상청(NWS), 캐나다 환경기후변화부, 위스콘신대 SSEC, BBC 사이언스 포커스', 540, 1700, 26, '#fff', '#000', 5); }
 function flashes(t) { [S.belief.start, S.twist.start, S.flash.start, S.ground.start, S.car.start, S.after.start, S.outro.start].forEach(c => { const f = 1 - pr(t, c, c + .18); if (t >= c && f > 0) { ctx.fillStyle = `rgba(255,255,255,${f * .7})`; ctx.fillRect(0, 0, W, H); } });
   STRIKES().forEach(([, t0]) => { const f = 1 - pr(t, t0, t0 + .3); if (t >= t0 && f > 0 && MODE(t) == '3d') { ctx.fillStyle = `rgba(255,255,240,${f * .55})`; ctx.fillRect(0, 0, W, H); } }); }
+
+function capLine(chars, y, size) { const runs = []; chars.forEach(([ch, k]) => { if (runs.length && runs[runs.length - 1][1] == k) runs[runs.length - 1][0] += ch; else runs.push([ch, k]); });
+  let w = 0; runs.forEach(r => { ctx.font = `${r[1] ? size + 8 : size}px Jua`; r.push(ctx.measureText(r[0]).width); w += r[2]; });
+  const sc = w > 1010 ? 1010 / w : 1; ctx.save(); ctx.translate(540, y); ctx.scale(sc, sc); let px = -w / 2; runs.forEach(r => { txt(r[0], px, 0, r[1] ? size + 8 : size, r[1] ? YEL : '#fff', '#000', 12, 'left'); px += r[2]; }); ctx.restore(); }
+function caption2(t) { const c = CHUNKS.find(c => t >= c.start && t < c.hold); if (!c) return; const s = c.text, chars = []; let i = 0;
+  while (i < s.length) { let hit = null; for (const k of KW) if (s.startsWith(k, i) && (!hit || k.length > hit.length)) hit = k; if (hit) { for (const ch of hit) chars.push([ch, true]); i += hit.length; } else { chars.push([s[i], false]); i++; } }
+  const SZ = 92; ctx.font = `${SZ}px Jua`; const full = ctx.measureText(s).width;
+  if (full <= 940) { capLine(chars, 1255, SZ); return; }
+  let best = -1, bd = 1e9; chars.forEach(([ch], j) => { if (ch == ' ') { const d = Math.abs(ctx.measureText(s.slice(0, j)).width - ctx.measureText(s.slice(j + 1)).width); if (d < bd) { bd = d; best = j; } } });
+  if (best < 0) { capLine(chars, 1255, SZ); return; }
+  capLine(chars.slice(0, best), 1200, SZ); capLine(chars.slice(best + 1), 1310, SZ); }
 const capOn = t => !((t >= S.twist.start && t < S.flash.start) || t >= S.outro.start);
 function draw(t) { state(t); camAt(t); ctx.clearRect(0, 0, W, H); const md = MODE(t);
   if (md == '3d') render3(); else if (md == 'belief') beliefScreen(t); else if (md == 'typo') typoScreen(t); else if (md == 'flash') flashScreen(t); else if (md == 'after') afterScreen(t); else outroScreen(t);
-  grade(); if (md == '3d') overlays(t); chrome(t); flashes(t); if (capOn(t)) caption(t); }
+  grade(); if (md == '3d') overlays(t); chrome(t); flashes(t); if (capOn(t)) caption2(t); }
 window.seek = async t => draw(t);
 TL = await (await fetch(TLFILE)).json();
 S = {}; TL.scenes.forEach(s => S[s.name] = s); C = TL.cues; KW = TL.keywords; CHUNKS = TL.lines.flatMap(l => l.chunks);
